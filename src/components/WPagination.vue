@@ -1,5 +1,6 @@
 <template>
-  <nav class="pagination is-centered is-small is-rounded">
+  <nav v-if="!pages"></nav>
+  <nav v-else class="pagination is-centered is-small is-rounded">
     <a class="pagination-previous" @click="selectPage(currentPage - 1)">
       <span class="icon">
         <i class="fas fa-arrow-left"> </i>

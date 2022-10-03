@@ -1,7 +1,7 @@
 <template>
   <div class="home columns">
     <WDataFiltersList
-      class="column is-one-third"
+      class="column box is-one-third"
       :filters="filters"
       @update:filters="updateFilters"
     />
@@ -110,6 +110,7 @@ export default {
     filters: {
       deep: true,
       handler() {
+        this.currentPage = 1;
         this.updateData();
       },
     },
