@@ -1,7 +1,7 @@
 <template>
   <div class="home">
-    <WDataTable :headers="headers" :items="items" :loading="loading" />
-    <WPagination :pages="pages" v-model:currentPage="currentPage"/>
+    <WDataTable :columns="columns" @update:columns="updateColumns" :items="items" :loading="loading" />
+    <WPagination :pages="pages" v-model:currentPage="offset" />
   </div>
 </template>
 
@@ -13,23 +13,42 @@ export default {
   name: 'HomeView',
   data() {
     return {
-      order: "",
+      order: "amount",
       limit: 10,
-      offset: 0,
-      currentPage: 1
+      offset: 1,
+      columns: [
+        { text: 'Date', value: 'date' },
+        {
+          text: 'Title', value: 'title',
+          sort: {
+            direction: 0,
+            ascIcon: 'fa-arrow-up-a-z',
+            descIcon: 'fa-arrow-down-a-z'
+          }
+        },
+        {
+          text: 'Amount', value: 'amount',
+          sort: {
+            direction: 0,
+            ascIcon: 'fa-arrow-up-1-9',
+            descIcon: 'fa-arrow-down-1-9'
+          }
+        },
+        {
+          text: 'Distance', value: 'distance',
+          sort: {
+            direction: 0,
+            ascIcon: 'fa-arrow-up-1-9',
+            descIcon: 'fa-arrow-down-1-9'
+          }
+        },
+
+      ]
     }
   },
   computed: {
     loading() {
       return this.$store.getters.loading;
-    },
-    headers() {
-      return [
-        { text: 'Date', value: 'date', sortable: false },
-        { text: 'Title', value: 'title', sortable: true, sortType: 'text' },
-        { text: 'Amount', value: 'amount', sortable: true, sortType: 'number' },
-        { text: 'Distance', value: 'distance', sortable: true, sortType: 'number' },
-      ];
     },
     items() {
       return this.$store.getters.data;
@@ -38,14 +57,35 @@ export default {
       return Math.ceil(this.$store.getters.dataLength / this.limit);
     }
   },
-  watch: {
-    currentPage() {
-      this.reloadData();
-    }
-  },
   methods: {
     reloadData() {
-      this.$store.dispatch('loadData', { order: this.order, limit: this.limit, offset: this.currentPage });
+      this.$store.dispatch('loadData', { order: this.order, limit: this.limit, offset: this.offset });
+    },
+    updateColumns(newColumns) {
+      this.columns = newColumns;
+      let newOrder = '';
+
+      this.columns.forEach(column => {
+        if (column.sort) {
+          if (column.sort.direction == -1)
+            newOrder += column.value + '.desc,'
+          if (column.sort.direction == 1)
+            newOrder += column.value + '.asc,'
+          }
+      });
+      this.order = newOrder.slice(0,-1); // remove extra semicolon
+      console.log(this.order);
+    }
+  },
+  watch: {
+    offset() {
+      this.reloadData();
+    },
+    order() {
+      this.reloadData();
+    },
+    limit() {
+      this.reloadData();
     }
   },
   created() {

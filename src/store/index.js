@@ -19,8 +19,7 @@ export default createStore({
     }
   },
   mutations: {
-    WRITE_LENGTH(state, length)
-    {
+    WRITE_LENGTH(state, length) {
       state.dataLength = length;
     },
     WRITE_DATA(state, data) {
@@ -40,6 +39,7 @@ export default createStore({
       if (payload.limit) params.limit = payload.limit;
       if (payload.offset) params.offset = payload.offset;
       if (payload.order) params.order = payload.order;
+      // Using PostgREST interface of Supabase https://postgrest.org/, https://supabase.com/
       try {
         const res = await axios({
           method: 'get',

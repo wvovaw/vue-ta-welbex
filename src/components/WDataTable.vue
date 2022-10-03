@@ -2,19 +2,25 @@
   <div class="table-container">
     <table class="table is-bordered is-striped is-hoverable is-fullwidth">
       <thead>
-        <th v-for="header in localHeaders" :key="header.text"
-          :class="header.sortable ? header.state.sort != '' ? 'table__column--sortable_active' : 'table__column--sortable' : 'table__column'"
-          @click="header.sortable ? toggleColumnSortState(header) : null">
-          {{ header.text }}
-          <span v-if="header.sortable" class="icon">
-            <i class="fas" :class="header.state.class">
+        <th v-for="column in localColumns" :key="column"
+        :class="column.sort ? column.sort.direction != 0 ? 'table__column--sortable_active' : 'table__column--sortable' : 'table__column'"
+        @click="column.sort ? toggleColumnSortState(column) : null">
+          {{ column.text }}
+          <span v-if="column.sort" class="icon">
+            <i class="fas"
+              :class="{
+                [column.sort.descIcon]: column.sort.direction == -1,
+                '': column.sort.direction == 0,
+                [column.sort.ascIcon]: column.sort.direction == 1,
+              }"
+            >
             </i>
           </span>
         </th>
       </thead>
       <tbody>
         <tr>
-          <td class="loading m-0 p-0" :colspan="localHeaders.length">
+          <td class="loading m-0 p-0" :colspan="localColumns.length">
             <progress class="progress is-small is-info p-0 m-0" max="100" :value="loading ? '' : '0'">30%</progress>
           </td>
         </tr>
@@ -34,40 +40,23 @@
 export default {
   data() {
     return {
-      localHeaders: this.headers
+      localColumns: this.columns
     }
   },
   methods: {
-    toggleColumnSortState(header) {
-      console.log('click at ', header)
-      if (header.state.sort == '') {
-        header.state.sort = 'ascending';
-        header.state.class = header.sortType == 'text' ? 'fa-arrow-up-a-z'
-          : header.sortType == 'number' ? 'fa-arrow-up-1-9'
-            : 'fa-arrow-up';
-      }
-      else if (header.state.sort == 'ascending') {
-        header.state.sort = 'descending';
-        header.state.class = header.state.class.replace('up', 'down');
-      }
-      else {
-        header.state.sort = '';
-        header.state.class = header.state.class = '';
-      }
-    }
-  },
-  created() {
-    this.headers.forEach(header => {
-      if (header.sortable) {
-        header.state = {
-          sort: '', // '':'ascending':'descending'
-          class: '' // '':'fa-arrow-up-1-9':'fa-arrow-up-a-z':'fa-arrow-up':'fa-arrow-down-1-9':'fa-arrow-down-a-z':'fa-arrow-down'
-        }
-      }
-    });
+    toggleColumnSortState(column) {
+      if (column.sort.direction == -1)
+        column.sort.direction = 0;
+      else if (column.sort.direction == 0)
+        column.sort.direction = 1;
+      else if (column.sort.direction == 1)
+        column.sort.direction = -1;
+
+      this.$emit('update:columns', this.localColumns);
+    },
   },
   props: {
-    headers: {
+    columns: {
       type: Array,
       required: true
     },
@@ -80,6 +69,7 @@ export default {
       required: false
     },
   },
+  emits: ['update:columns']
 }
 </script>
 
