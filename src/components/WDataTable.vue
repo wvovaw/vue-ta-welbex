@@ -3,19 +3,20 @@
     <table class="table is-bordered is-striped is-hoverable is-fullwidth">
       <thead>
         <th v-for="column in localColumns" :key="column"
-        :class="column.sort ? column.sort.direction != 0 ? 'table__column--sortable_active' : 'table__column--sortable' : 'table__column'"
-        @click="column.sort ? toggleColumnSortState(column) : null">
-          {{ column.text }}
-          <span v-if="column.sort" class="icon">
-            <i class="fas"
-              :class="{
-                [column.sort.descIcon]: column.sort.direction == -1,
-                '': column.sort.direction == 0,
-                [column.sort.ascIcon]: column.sort.direction == 1,
-              }"
-            >
-            </i>
-          </span>
+          :class="column.sortable !== false ? sortSequenceIncludes(column.value) ? 'table__column--sortable_active' : 'table__column--sortable' : 'table__column'"
+          @click="column.sortable !== false ? updateSortSequence(column.value) : null">
+          <div class="column__title">
+            {{ column.text }}
+            <span v-show="column.sortable !== false" class="icon">
+              <i class="fas" :class="{
+                [column.descIcon]: localSortSequence.includes(String('-' + column.value)),
+                [column.ascIcon]: localSortSequence.includes(column.value),
+              }">
+              </i>
+            </span>
+            <span v-if="multisort && sortSequenceIncludes(column.value)" class="tag is-rounded is-small">{{
+            `${columnSortSequenceIndex(column.value) + 1}` }}</span>
+          </div>
         </th>
       </thead>
       <tbody>
@@ -25,7 +26,7 @@
           </td>
         </tr>
         <tr v-for="(item, item_ix) in items" :key="item_ix">
-          <td v-for="(cell, key, cell_ix) in item" :key="cell_ix">
+          <td v-for="(cell, key, cell_ix) in item" :key="cell_ix" class="table__cell">
             {{ cell }}
           </td>
         </tr>
@@ -40,25 +41,62 @@
 export default {
   data() {
     return {
-      localColumns: this.columns
+      localColumns: this.columns,
+      localSortSequence: this.sortSequence
     }
   },
   methods: {
-    toggleColumnSortState(column) {
-      if (column.sort.direction == -1)
-        column.sort.direction = 0;
-      else if (column.sort.direction == 0)
-        column.sort.direction = 1;
-      else if (column.sort.direction == 1)
-        column.sort.direction = -1;
+    columnSortSequenceIndex(columnValue) {
+      let ix = this.localSortSequence.indexOf(columnValue);
+      if (ix == -1) ix = this.localSortSequence.indexOf('-' + columnValue);
+      return ix;
+    },
+    sortSequenceIncludes(columnValue) {
+      if (this.columnSortSequenceIndex(columnValue) != -1) return true;
+      else return false;
+    },
+    updateSortSequence(columnValue) {
+      const lss = this.localSortSequence;
+      if (lss.length != 0) {
 
-      this.$emit('update:columns', this.localColumns);
+        const ix = this.columnSortSequenceIndex(columnValue);
+        if (ix != -1) {
+          if (lss[ix] == columnValue)
+            lss[ix] = '-' + columnValue;
+          else if (lss[ix] == '-' + columnValue)
+            lss.splice(ix, 1);
+          else if (this.multisort)
+            lss.push(columnValue);
+          else {
+            console.log('here');
+            lss.splice(ix, 1);
+            lss.push(columnValue);
+          }
+        }
+        else if (this.multisort)
+          lss.push(columnValue);
+        else {
+          console.log('here');
+          lss.splice(ix, 1);
+          lss.push(columnValue);
+        }
+      }
+      else lss.push(columnValue);
+      this.$emit('update:sortSequence', lss);
     },
   },
   props: {
     columns: {
       type: Array,
       required: true
+    },
+    sortSequence: {
+      type: Array,
+      required: true
+    },
+    multisort: {
+      type: Boolean,
+      default: false,
     },
     items: {
       type: Array,
@@ -69,7 +107,7 @@ export default {
       required: false
     },
   },
-  emits: ['update:columns']
+  emits: ['update:columns', 'update:sortSequence']
 }
 </script>
 
@@ -78,26 +116,37 @@ export default {
 
 .loading {
   max-height: 0.2rem;
-
   width: 100%;
 
-  &>progress {
+  & > progress {
     max-height: 0.15rem;
     border-radius: 0;
   }
 }
 
-.table__column {
-  color: $grey;
+.table {
 
-  &--sortable {
+  &__column {
     color: $grey;
-    cursor: pointer;
 
-    &:hover,
-    &_active {
+    &--sortable {
+      color: $grey;
       cursor: pointer;
-      color: $black;
+
+      &:hover,
+      &_active {
+        cursor: pointer;
+        color: $black;
+      }
+    }
+  }
+
+  &__cell {
+  }
+
+  .column {
+    &__title {
+      display: inline-flex;
     }
   }
 }

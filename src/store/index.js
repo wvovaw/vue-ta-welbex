@@ -36,9 +36,9 @@ export default createStore({
       const params = {
         select: 'date,title,amount,distance',
       };
+      if (payload.order) params.order = payload.order;
       if (payload.limit) params.limit = payload.limit;
       if (payload.offset) params.offset = payload.offset;
-      if (payload.order) params.order = payload.order;
       // Using PostgREST interface of Supabase https://postgrest.org/, https://supabase.com/
       try {
         const res = await axios({
