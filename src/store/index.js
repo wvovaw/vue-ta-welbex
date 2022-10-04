@@ -48,7 +48,7 @@ export default createStore({
       try {
         const res = await axios({
           method: "get",
-          url: "/w2", // Using proxy in vue.config.js
+          url: "https://hjvapokvksuwtchyqkzx.supabase.co/rest/v1/w2",
           params,
           headers: {
             apikey: process.env.VUE_APP_API_KEY,
