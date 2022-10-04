@@ -52,8 +52,9 @@
             </progress>
           </td>
         </tr>
-        <tr v-for="(item, item_ix) in items" :key="item_ix">
+        <tr v-for="(item, item_ix) in items" :key="item_ix" v-auto-animate>
           <td
+            v-auto-animate
             v-for="(cell, key, cell_ix) in item"
             :key="cell_ix"
             class="table__cell"

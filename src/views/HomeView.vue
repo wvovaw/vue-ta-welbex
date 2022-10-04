@@ -15,19 +15,19 @@
       </p>
     </div>
     <div class="columns">
-      <div class="column is-one-third py-0">
+      <div class="column is-one-third py-0" v-auto-animate>
         <WDataFiltersList
           class="box is-size-7"
           :filters="filters"
           @update:filters="updateFilters"
         />
         <div
-          v-show="$store.getters.error != null"
+          v-if="error.message"
           class="notification is-size-7 is-danger is-light"
         >
-          <a>{{ $store.getters.error.message }}</a>
+          <a>{{ error.message }}</a>
           <br />
-          <strong>{{ $store.getters.error.hint }}</strong>
+          <strong>{{ error.hint }}</strong>
         </div>
       </div>
       <div class="column box">
@@ -99,6 +99,9 @@ export default {
     },
     offset() {
       return (this.currentPage - 1) * this.limit;
+    },
+    error() {
+      return this.$store.getters.error;
     },
   },
   methods: {

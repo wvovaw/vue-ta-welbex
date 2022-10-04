@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <p class="card-header-title">Filters</p>
-    <div class="card-content px-0">
+    <div v-auto-animate class="card-content px-0">
       <WDataFilter
         v-for="(filter, ix) of localFilters"
         :key="filter"
