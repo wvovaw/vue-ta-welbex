@@ -6,6 +6,8 @@ export default createStore({
     data: [],
     dataLength: 0,
     loading: true,
+    error: {},
+    resultUrl: "https://hjvapokvksuwtchyqkzx.supabase.co/rest/v1/w2/",
   },
   getters: {
     data(state) {
@@ -16,6 +18,12 @@ export default createStore({
     },
     loading(state) {
       return state.loading;
+    },
+    error(state) {
+      return state.error;
+    },
+    resultUrl(state) {
+      return state.resultUrl;
     },
   },
   mutations: {
@@ -28,6 +36,13 @@ export default createStore({
     },
     LOADING(state) {
       state.loading = true;
+    },
+    WRITE_ERROR(state, error) {
+      state.error = error;
+    },
+    WRITE_URL(state, qs) {
+      state.resultUrl =
+        "https://hjvapokvksuwtchyqkzx.supabase.co/rest/v1/w2/" + qs;
     },
   },
   actions: {
@@ -42,8 +57,8 @@ export default createStore({
         payload.filters.forEach((filter) => {
           params.append(filter.column, filter.operation + "." + filter.query);
         });
-        console.log(params);
       }
+      commit("WRITE_URL", params.toString());
       // Using PostgREST interface of Supabase https://postgrest.org/, https://supabase.com/
       try {
         const res = await axios({
@@ -61,8 +76,13 @@ export default createStore({
           Number(res.headers["content-range"].replace(/\d+-\d+\//, ""))
         );
         commit("WRITE_DATA", res.data);
+        commit("WRITE_ERROR", {});
       } catch (err) {
         console.error(err.response.data);
+        commit("WRITE_ERROR", {
+          hint: err.response.data.hint,
+          message: err.response.data.message,
+        });
       }
     },
   },

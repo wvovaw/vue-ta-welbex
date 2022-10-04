@@ -1,10 +1,11 @@
 <template>
-  <div class="">
+  <div class="card">
     <p class="card-header-title">Filters</p>
-    <div class="card-content">
+    <div class="card-content px-0">
       <WDataFilter
         v-for="(filter, ix) of localFilters"
         :key="filter"
+        class="mx-0 px-0"
         v-model="localFilters[ix]"
         @delete:modelValue="deleteFilter(ix)"
       />

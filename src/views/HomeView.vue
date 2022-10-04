@@ -1,20 +1,48 @@
 <template>
-  <div class="home columns">
-    <WDataFiltersList
-      class="column box is-one-third"
-      :filters="filters"
-      @update:filters="updateFilters"
-    />
-    <div class="table column">
-      <WDataTable
-        :columns="columns"
-        :items="items"
-        :sortSequence="sortSequence"
-        @update:sortSequence="updateSortSequence"
-        multisort
-        :loading="loading"
-      />
-      <WPagination :pages="pages" v-model:currentPage="currentPage" />
+  <div class="home container">
+    <div class="field">
+      <label class="label">Result PostgREST API query</label>
+      <div class="control">
+        <input
+          class="input is-small"
+          type="text"
+          readonly
+          :value="$store.getters.resultUrl"
+        />
+      </div>
+      <p class="help">
+        This is a query that depends on filters and columns sort selection
+      </p>
+    </div>
+    <div class="columns">
+      <div class="column is-one-third py-0">
+        <WDataFiltersList
+          class="box is-size-7"
+          :filters="filters"
+          @update:filters="updateFilters"
+        />
+        <div
+          v-show="$store.getters.error != null"
+          class="notification is-size-7 is-danger is-light"
+        >
+          <a>{{ $store.getters.error.message }}</a>
+          <br />
+          <strong>{{ $store.getters.error.hint }}</strong>
+        </div>
+      </div>
+      <div class="column box">
+        <div class="table">
+          <WDataTable
+            :columns="columns"
+            :items="items"
+            :sortSequence="sortSequence"
+            @update:sortSequence="updateSortSequence"
+            multisort
+            :loading="loading"
+          />
+          <WPagination :pages="pages" v-model:currentPage="currentPage" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -94,7 +122,6 @@ export default {
         else newOrderQuery += column + ".asc,";
       });
       this.orderQuery = newOrderQuery.slice(0, -1); // remove extra semicolon
-      console.log(this.orderQuery);
     },
   },
   watch: {
@@ -132,8 +159,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+body {
+  background-color: magenta;
+}
 .home {
-  margin-inline: auto;
   padding: 2rem 1rem;
 }
 </style>

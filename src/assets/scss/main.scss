@@ -7,10 +7,10 @@
 @import "colorscheme.scss";
 
 // Update Bulma’s global variables
-// $family-sans-serif: "Titillium Web";
-$family-sans-serif: "Roboto Slab";
 // $widescreen-enabled: false;
 // $fullhd-enabled: false;
+
+$family-sans-serif: "Roboto Slab";
 
 ::-webkit-scrollbar {
   margin-left: 10px;

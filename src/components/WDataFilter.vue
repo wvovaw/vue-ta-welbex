@@ -1,7 +1,7 @@
 <template>
   <div class="field tag is-large pl-0 is-white has-addons">
     <div class="control has-icons-left">
-      <div class="select">
+      <div class="select is-small">
         <select v-model="localModelValue.column">
           <option v-for="c in columns" :key="c.value" :value="c.value">
             {{ c.text }}
@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="control has-icons-left">
-      <div class="select">
+      <div class="select is-small">
         <select v-model="localModelValue.operation">
           <option value="eq">&#61;</option>
           <option value="imatch">&#8715;</option>
@@ -25,7 +25,11 @@
         <i class="fas fa-filter"></i>
       </div>
     </div>
-    <input type="text" class="input" v-model.lazy="localModelValue.query" />
+    <input
+      type="text"
+      class="input is-small"
+      v-model.lazy="localModelValue.query"
+    />
     <button class="delete" @click="$emit('delete:modelValue')"></button>
   </div>
 </template>
@@ -46,7 +50,6 @@ export default {
           this.localModelValue.operation &&
           this.localModelValue.query
         ) {
-          console.log("filter is ready");
           this.$emit("update:modelValue", this.localModelValue);
         }
       },

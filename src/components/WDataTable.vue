@@ -1,6 +1,8 @@
 <template>
   <div class="table-container">
-    <table class="table is-bordered is-striped is-hoverable is-fullwidth">
+    <table
+      class="table is-bordered is-striped is-hoverable is-fullwidth is-size-7"
+    >
       <thead>
         <th
           v-for="column in localColumns"
@@ -92,13 +94,11 @@ export default {
           else if (lss[ix] == "-" + columnValue) lss.splice(ix, 1);
           else if (this.multisort) lss.push(columnValue);
           else {
-            console.log("here");
             lss.splice(ix, 1);
             lss.push(columnValue);
           }
         } else if (this.multisort) lss.push(columnValue);
         else {
-          console.log("here");
           lss.splice(ix, 1);
           lss.push(columnValue);
         }
